@@ -6,11 +6,14 @@ import com.BankingService.Cards.Service.ICardsService;
 import com.BankingService.Cards.dto.CardsDto;
 import com.BankingService.Cards.mapper.CardsMapper;
 import com.BankingService.Cards.repository.CardsRepository;
+import lombok.AllArgsConstructor;
+import org.springframework.stereotype.Service;
 
 import javax.smartcardio.Card;
 import java.util.Optional;
 import java.util.Random;
 
+@Service @AllArgsConstructor
 public class CardsServiceImpl implements ICardsService {
     private CardsRepository cardsRepository;
 
@@ -36,11 +39,20 @@ public class CardsServiceImpl implements ICardsService {
 
     @Override
     public boolean updateCard(CardsDto cardsDto) {
-        return false;
+        Cards cards = cardsRepository.findByCardNumber(cardsDto.getCardNumber()).orElseThrow(
+                RuntimeException::new
+        );
+        CardsMapper.mapToCards(cardsDto,cards);
+        cardsRepository.save(cards);
+        return true;
     }
 
     @Override
     public boolean deleteCard(String mobileNumber) {
-        return false;
+        Cards cards = cardsRepository.findByMobileNumber(mobileNumber).orElseThrow(
+                RuntimeException::new
+        );
+        cardsRepository.deleteById(cards.getCardId());
+        return true;
     }
 }
